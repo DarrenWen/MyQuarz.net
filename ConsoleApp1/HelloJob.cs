@@ -24,6 +24,7 @@ namespace ConsoleApp1
         private void MyMethod()
         {
             Console.WriteLine(DateTime.Now);
+            Console.WriteLine("TestLog");
         }
     }
 }
