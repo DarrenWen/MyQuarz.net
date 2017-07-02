@@ -25,6 +25,7 @@ namespace ConsoleApp1
         {
             Console.WriteLine(DateTime.Now);
             Console.WriteLine("TestLog");
+
         }
     }
 }
