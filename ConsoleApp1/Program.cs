@@ -1,6 +1,7 @@
 ﻿using Quartz;
 using Quartz.Impl;
 using System;
+using System.Collections.Specialized;
 using System.Threading;
 
 namespace ConsoleApp1
@@ -12,12 +13,37 @@ namespace ConsoleApp1
             Console.WriteLine("Hello World!");
 
 
-            AsyncMethod();
+
+            while (true)
+            {
+                string cmd = Console.ReadLine();
+                switch (cmd.ToLower())
+                {
+                    case "a":
+                        QuickStart();
+                        break;
+                    case "b":
+                        FirsLession();
+                        break;
+                    case "c":
+                        SecondLession();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            QuickStart();
 
             Console.ReadLine();
         }
 
-        static async void AsyncMethod()
+
+        #region 快速入门级
+        /// <summary>
+        /// 入门级教程
+        /// </summary>
+        static async void QuickStart()
         {
             try
             {
@@ -55,5 +81,50 @@ namespace ConsoleApp1
                 Console.WriteLine(se);
             }
         }
+        #endregion
+
+        #region first lession
+        static async void FirsLession()
+        {
+            //构造一个策略工厂
+            //NameValueCollection props = new NameValueCollection {
+            //    {"quartz.serializer.type","binary" }
+            //};
+
+            StdSchedulerFactory factory = new StdSchedulerFactory();
+            //获取一个策略
+            IScheduler sched = await factory.GetScheduler();
+            //开始策略
+            await sched.Start();
+            //设置一个任务
+            IJobDetail job = JobBuilder.Create<HelloJob>().WithIdentity("myjob","group1").Build();
+            //设置任务触发条件
+            ITrigger trigger = TriggerBuilder.Create().WithIdentity("myTrigger", "group1").StartNow().WithSimpleSchedule(x=>x.WithIntervalInSeconds(2).RepeatForever()).Build();
+            //将任务加入任务列表
+            await sched.ScheduleJob(job, trigger);
+        }
+        #endregion
+
+        #region Second lession
+        static async void SecondLession()
+        {
+            //构造一个策略工厂
+            //NameValueCollection props = new NameValueCollection {
+            //    {"quartz.serializer.type","binary" }
+            //};
+
+            StdSchedulerFactory factory = new StdSchedulerFactory();
+            //获取一个策略
+            IScheduler sched = await factory.GetScheduler();
+            //开始策略
+            await sched.Start();
+            //设置一个任务
+            IJobDetail job = JobBuilder.Create<DumbJob>().WithIdentity("myjob", "group1").UsingJobData("jobSays","Hello world!").UsingJobData("myFloatValue",3.1415f).Build();
+            //设置任务触发条件
+            ITrigger trigger = TriggerBuilder.Create().WithIdentity("myTrigger", "group1").StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(2).RepeatForever()).Build();
+            //将任务加入任务列表
+            await sched.ScheduleJob(job, trigger);
+        }
+        #endregion
     }
 }
