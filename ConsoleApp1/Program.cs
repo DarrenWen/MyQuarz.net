@@ -32,6 +32,9 @@ namespace ConsoleApp1
                     case "d":
                         ThridTriggers();
                         break;
+                    case "e":
+                        SimpleTriggers();
+                        break;
                     default:
                         break;
                 }
@@ -156,6 +159,34 @@ namespace ConsoleApp1
             //将任务加入任务列表
             await sched.ScheduleJob(job, trigger);
         }
+        #endregion
+
+
+        #region Fourth Simple Triggers
+        static async void SimpleTriggers()
+        {
+            //构造一个策略工厂
+            //NameValueCollection props = new NameValueCollection {
+            //    {"quartz.serializer.type","binary" }
+            //};
+
+            StdSchedulerFactory factory = new StdSchedulerFactory();
+            //获取一个策略
+            IScheduler sched = await factory.GetScheduler();
+            //开始策略
+            await sched.Start();
+            //设置一个任务
+            IJobDetail job = JobBuilder.Create<DumbJob>().WithIdentity("myjob", "group1").UsingJobData("jobSays", "Hello world!").UsingJobData("myFloatValue", 3.1415f).Build();
+            //设置任务触发条件
+            // ITrigger trigger = TriggerBuilder.Create().WithIdentity("myTrigger", "group1").StartNow().WithSimpleSchedule(x => x.WithIntervalInSeconds(2).RepeatForever()).Build();
+
+            ITrigger trigger = TriggerBuilder.Create().WithIdentity("tr0", "group1").StartAt(DateTimeOffset.Now.AddSeconds(30)).WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1000)).EndAt(DateBuilder.DateOf(19,23,0)).Build();
+
+            //将任务加入任务列表
+            await sched.ScheduleJob(job, trigger);
+        }
+
+
         #endregion
     }
 }
